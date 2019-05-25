@@ -397,7 +397,7 @@ begin
   Form2.show;
 
   // Делаем надпись для графика в заголовке окна
-  Form2.Caption:= 'График ПРОИЗВОДНОЙ от ' + ArNamef[ComboBox1.ItemIndex];
+  Form2.Caption:= 'График ИТЕГРАЛА от ' + ArNamef[ComboBox1.ItemIndex];
 end;
 
 end.
