@@ -31,12 +31,13 @@ implementation
 // т.к. Unit1 также подключает Unit2
 Uses Unit1, Jobs;
 
+Type
+  // Тип массива точек для передачи в функции
+  TMasPoints = array of TPoint;
+
 var Xn, Yn, Xk, Yk: integer; // Область Image1 выделенная под рисование графика
     Ymin, Ymax: real; // Минимуы максимумы функций
     mx, my: real; // Коэффициенты для отображения графика на ВСЁМ Image1
-
-Type
-  MasPoints = array of TPoint;
 
 {$R *.lfm}
 
@@ -62,7 +63,7 @@ end;
 {Пересечения графика с прямыми вида y=L, где L=const - ГОРИЗОНТАЛЬНЫЕ линии}
 // GraficPoints - массив коордиат графика
 // ResPoints - массив точек пересечения графика с прямой y = Yg
-procedure CrossingsY(GraficPoints: MasPoints; var ResPoints: MasPoints; Yg: integer);
+procedure CrossingsY(GraficPoints: TMasPoints; var ResPoints: TMasPoints; Yg: integer);
 var k, i: integer;
     p1, p2, p: TPoint;
 begin
@@ -101,7 +102,7 @@ end;
 {Пересечения графика с прямыми вида x=L, где L=const - ВЕРТИКАЛЬНЫЕ линии}
 // GraficPoints - массив коордиат графика
 // ResPoints - массив точек пересечения графика с прямой x = Xg
-procedure CrossingsX(GraficPoints: MasPoints; var ResPoints: MasPoints; Xg: integer);
+procedure CrossingsX(GraficPoints: TMasPoints; var ResPoints: TMasPoints; Xg: integer);
 var k, i: integer;
     p1, p2, p: TPoint;
 begin
@@ -131,8 +132,8 @@ end;
 
 {Вызывается при показе формы2}
 procedure TForm2.FormShow(Sender: TObject);
-var GraficPoints : MasPoints; // Массив точек графика
-    CrossPoints: MasPoints;   // массив точек пересечения
+var GraficPoints : TMasPoints; // Массив точек графика
+    CrossPoints: TMasPoints;   // массив точек пересечения
     i,j: integer;
     x :real; // Для перебора Иксов
     Ndx, Ndy: integer;  // Для координатной сетки
