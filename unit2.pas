@@ -69,6 +69,13 @@ var MasPoints : array of TPoint;
     sx, sy: string;
 begin
 
+  // Делаем надпись для графика в заголовке окна
+  Form2.Caption:= 'График 1-ой ПРОИЗВОДНОЙ  |  y=' + Form1.ComboBox1.Items[Form1.ComboBox1.ItemIndex];
+  //или
+  //Form2.Caption:= 'График 2-ой ПРОИЗВОДНОЙ  |  y=' + Form1.ComboBox1.Items[Form1.ComboBox1.ItemIndex];
+
+
+
   // Cтираем всё что было на холсте
   Image1.Canvas.Brush.Color:= clWhite;
   Image1.Canvas.FillRect(Rect(0, 0, Image1.Width, Image1.Height));
@@ -81,11 +88,16 @@ begin
 
   // 2) Определение Ymin, Ymax
   setlength(Arfx, n + 1);
+
   // Было
   // FotX(Func, a, b, n, Arfx); // Получаем распределение y - игреков
   // Заменяем на
   // Получаем распределение точек графика прозводной
   Df_dx(Func, a, b, n, Arfx);
+
+  // Если надо построить график ВТОРОЙ производной, то Df_dx заменяем на
+  //D2f_dx(Func, a, b, n, Arfx);
+
   PosMinMax(Arfx, Ymin, Ymax);
 
   // 3) Операция масштабирования - вычисление масштабных коэффициентов
