@@ -18,8 +18,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <TopLine Value="368"/>
-        <CursorPos X="35" Y="400"/>
+        <TopLine Value="369"/>
+        <CursorPos X="14" Y="397"/>
         <UsageCount Value="114"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -38,7 +38,6 @@
         <Filename Value="jobs.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Jobs"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <TopLine Value="69"/>
         <CursorPos X="19" Y="91"/>
@@ -60,9 +59,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit2"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="59"/>
-        <CursorPos X="8" Y="88"/>
+        <CursorPos X="36" Y="73"/>
         <UsageCount Value="42"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>

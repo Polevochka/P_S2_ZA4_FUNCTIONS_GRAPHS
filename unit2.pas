@@ -69,6 +69,9 @@ var MasPoints : array of TPoint;
     sx, sy: string;
 begin
 
+  // Делаем надпись для графика в заголовке окна
+  Form2.Caption:= 'График ИНТЕГРАЛА  |  y=' + Form1.ComboBox1.Items[Form1.ComboBox1.ItemIndex];
+
   // Cтираем всё что было на холсте
   Image1.Canvas.Brush.Color:= clWhite;
   Image1.Canvas.FillRect(Rect(0, 0, Image1.Width, Image1.Height));
