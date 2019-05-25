@@ -30,6 +30,9 @@ implementation
 // чтобы не было зацикленности именно после implementation,
 // т.к. Unit1 также подключает Unit2
 Uses Unit1, Jobs;
+Type
+  // Тип массива точек для передачи в функции
+  TMasPoints = array of TPoint;
 
 var Xn, Yn, Xk, Yk: integer; // Область Image1 выделенная под рисование графика
     Ymin, Ymax: real; // Минимуы максимумы функций
@@ -56,9 +59,9 @@ begin
     end;
 end;
 
-
+{Вызывается при показе Form2}
 procedure TForm2.FormShow(Sender: TObject);
-var MasPoints : array of TPoint;
+var GraficPoints : TMasPoints;
     i: integer;
     x :real; // Для перебора Иксов
     Ndx, Ndy: integer;  // Для координатной сетки
@@ -92,15 +95,15 @@ begin
   my:= (Yk - Yn)/(Ymax - Ymin);
 
   // 4) Вычисление значений координат расчётных точек в графической системе координат
-  setlength(MasPoints, n+1); // Задаём размер массива точек
+  setlength(GraficPoints, n+1); // Задаём размер массива точек
   dx:= (b-a)/n;             // Находим Шаг
   // Заполняем этот массив точками графика
-  for i:= 0 to high(MasPoints) do
+  for i:= 0 to high(GraficPoints) do
     begin
       x:= a + i*dx; //вычисляем нужную точку
       // Переходим к графическим координатам
-      MasPoints[i].x:= Xn + Round(mx*(x-a));
-      MasPoints[i].y:= Yn + Round(my*(Ymax-Arfx[i])); // нет смысла использовать Func(x) так как Игреки(Y) уже были посчитаны на 2)-ом шаге
+      GraficPoints[i].x:= Xn + Round(mx*(x-a));
+      GraficPoints[i].y:= Yn + Round(my*(Ymax-Arfx[i])); // нет смысла использовать Func(x) так как Игреки(Y) уже были посчитаны на 2)-ом шаге
     end;
 
   // 5) Нанесение координатной сетки оцифровка осей
@@ -155,7 +158,7 @@ begin
   // Рисуем График
   Image1.Canvas.Pen.Color:= clBlue; // Рисуем его синим цветом шоб выделялся
   Image1.canvas.Pen.Width:=2; // Сделаем его жирнее сетки
-  Image1.Canvas.Polyline(MasPoints);
+  Image1.Canvas.Polyline(GraficPoints);
 
 end;
 
