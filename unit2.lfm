@@ -1,0 +1,20 @@
+object Form2: TForm2
+  Left = 140
+  Height = 519
+  Top = 83
+  Width = 730
+  Caption = 'Form2'
+  ClientHeight = 519
+  ClientWidth = 730
+  OnShow = FormShow
+  LCLVersion = '1.8.2.0'
+  object Image1: TImage
+    Left = 16
+    Height = 500
+    Top = 8
+    Width = 700
+    OnMouseMove = Image1MouseMove
+    ParentShowHint = False
+    ShowHint = True
+  end
+end
