@@ -18,7 +18,7 @@ procedure D2f_dx(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
 procedure Integ(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
 
 procedure Roots(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx; var k:integer);
-procedure Extrem(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx; var k:integer);
+procedure Extrems(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx; var k:integer);
 
 implementation
 
@@ -144,8 +144,8 @@ begin
 end;
 
 
-// Экстремумы функции
-procedure Extrem(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx; var k:integer);
+{Экстремумы функции}
+procedure Extrems(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx; var k:integer);
 var x, before, after, dx: real;
     i: integer;
 begin

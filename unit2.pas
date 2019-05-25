@@ -31,6 +31,11 @@ implementation
 // т.к. Unit1 также подключает Unit2
 Uses Unit1, Jobs;
 
+Type
+  // Тип массива точек для передачи в функции
+  TMasPoints = array of TPoint;
+
+
 var Xn, Yn, Xk, Yk: integer; // Область Image1 выделенная под рисование графика
     Ymin, Ymax: real; // Минимуы максимумы функций
     mx, my: real; // Коэффициенты для отображения графика на ВСЁМ Image1
@@ -56,17 +61,89 @@ begin
     end;
 end;
 
+{Пересечения графика с прямыми вида y=L, где L=const - ГОРИЗОНТАЛЬНЫЕ линии}
+// GraficPoints - массив коордиат графика
+// ResPoints - массив точек пересечения графика с прямой y = Yg
+procedure CrossingsY(GraficPoints: TMasPoints; var ResPoints: TMasPoints; Yg: integer);
+var k, i: integer;
+    p1, p2, p: TPoint;
+begin
+  k:=0; // счётчик найденных точек пересечения
+  // Обходим точки графика
+  for i:=0 to high(GraficPoints) do
+  begin
 
+    // Так как для соединения точек графика мы используем
+    // Image1.Canvas.Polyline(GraficPoints);
+    // то две соседние точки соединяются просто прямой линией
+    // И чтобы найти точку пересечения с этой линией надо найти две точки
+    // что по разные стороны от прямой y=Yg - как с корнями
+    if (GraficPoints[i].y <= Yg) and (GraficPoints[i+1].y >= Yg) or
+    (GraficPoints[i].y >= Yg) and (GraficPoints[i+1].y <= Yg) then
+    begin
+
+      // Мы нашли две точки - между которыми еть точка пересечения с графиком
+      p1 := GraficPoints[i];
+      p2 := GraficPoints[i+1];
+
+      // Используя всем известное уровнение
+      // прямой, проходящей через две точки p1 и p2
+      // можно легко найти абциссу точки пересечения
+      p.x := round((Yg-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)) + p1.x;
+      // а ордината этой точки уже известна
+      p.y := Yg;
+
+      k := k+1; // Увеличиваем число элементов в получаемом массиве точек пересечения
+      setlength(ResPoints, k); // Задаём размер массива, т.к. k- это просто счётчик
+      ResPoints[k-1]:= p; // Записываем в массив точку пересечения
+    end;
+  end;
+end;
+
+{Пересечения графика с прямыми вида x=L, где L=const - ВЕРТИКАЛЬНЫЕ линии}
+// GraficPoints - массив коордиат графика
+// ResPoints - массив точек пересечения графика с прямой x = Xg
+procedure CrossingsX(GraficPoints: TMasPoints; var ResPoints: TMasPoints; Xg: integer);
+var k, i: integer;
+    p1, p2, p: TPoint;
+begin
+  // Делаем все также как и с CrossingsY только для вертикальных линий
+  k:=0;// счётчик найденных точек пересечения
+  // Обходим точки графика
+  for i:=0 to high(GraficPoints) do
+  begin
+    if (GraficPoints[i].x <= Xg) and (GraficPoints[i+1].x >= Xg) or
+    (GraficPoints[i].x >= Xg) and (GraficPoints[i+1].x <= Xg) then
+    begin
+      // Нашли две точки, между которыми есть наша точка пересечения
+      p1 := GraficPoints[i];
+      p2 := GraficPoints[i+1];
+
+      // Ординату получаем из уравнения прямой проходящей через две точки
+      p.y := round((Xg-p1.x)*(p2.y-p1.y)/(p2.x-p1.x)) + p1.y;
+      // Абцисса уже дана
+      p.x := Xg;
+
+      k := k+1; // Увеличиваем число элементов в получаемом массиве точек пересечения
+      setlength(ResPoints, k); // Задаём размер массива, т.к. k- это просто счётчик
+      ResPoints[k-1]:= p; // Записываем в массив точку пересечения
+    end;
+  end;
+end;
+
+{Вызывается при показе Form2}
 procedure TForm2.FormShow(Sender: TObject);
-var MasPoints : array of TPoint;
-    i: integer;
+var GraficPoints : TMasPoints; // Массив точек графика
+    CrossPoints: TMasPoints;   // массив точек пересечения
+    i,j: integer;
     x :real; // Для перебора Иксов
     Ndx, Ndy: integer;  // Для координатной сетки
-    Xg, Yg: integer;
+    Xg, Yg: integer;    // Графические координаты графика
     DXg, DYg: integer;
     Xf, Yf: real;
     dx, dy: real;
     sx, sy: string;
+    p: Tpoint;  // используется для рисования кружков, квадратиков треугольников
 begin
 
   // Делаем надпись для графика в заголовке окна
@@ -96,15 +173,15 @@ begin
   my:= (Yk - Yn)/(Ymax - Ymin);
 
   // 4) Вычисление значений координат расчётных точек в графической системе координат
-  setlength(MasPoints, n+1); // Задаём размер массива точек
+  setlength(GraficPoints, n+1); // Задаём размер массива точек
   dx:= (b-a)/n;             // Находим Шаг
   // Заполняем этот массив точками графика
-  for i:= 0 to high(MasPoints) do
+  for i:= 0 to high(GraficPoints) do
     begin
       x:= a + i*dx; //вычисляем нужную точку
       // Переходим к графическим координатам
-      MasPoints[i].x:= Xn + Round(mx*(x-a));
-      MasPoints[i].y:= Yn + Round(my*(Ymax-Arfx[i])); // нет смысла использовать Func(x) так как Игреки(Y) уже были посчитаны на 2)-ом шаге
+      GraficPoints[i].x:= Xn + Round(mx*(x-a));
+      GraficPoints[i].y:= Yn + Round(my*(Ymax-Arfx[i])); // нет смысла использовать Func(x) так как Игреки(Y) уже были посчитаны на 2)-ом шаге
     end;
 
   // 5) Нанесение координатной сетки оцифровка осей
@@ -159,7 +236,80 @@ begin
   // Рисуем График
   Image1.Canvas.Pen.Color:= clBlue; // Рисуем его синим цветом шоб выделялся
   Image1.canvas.Pen.Width:=2; // Сделаем его жирнее сетки
-  Image1.Canvas.Polyline(MasPoints);
+  Image1.Canvas.Polyline(GraficPoints);
+
+  // Преподаватель может помимо построения графика интеграла
+  // поставить точки пересечения графика с сеткой
+
+  // p - точка которую надо поставить на графике
+
+  // Так добавляем точку ТРЕУГОЛЬНИКОМ
+  {
+            Image1.Canvas.MoveTo(p.x, p.y+5);
+            Image1.Canvas.LineTo(p.x-5, p.y-5);
+            Image1.Canvas.LineTo(p.x+5, p.y-5);
+            Image1.Canvas.LineTo(p.x, p.y+5);
+  }
+
+  // так делаем точку КВАДРАТИКОМ
+  {
+           Image1.Canvas.Rectangle(p.x-3, p.y-3, p.x+3, p.y+3);
+  }
+
+  // Так делем точку КРУЖОЧКОМ
+  {
+           Image1.Canvas.Ellipse(p.x-3, p.y-3, p.x+3, p.y+3);
+  }
+
+  // Преподаватель может выбрать на своё усмотрение каким способом
+  // вы должны поставить точку
+  // Для краткости кода я буду ставить точку КРУЖКОМ - но вас могут попросить
+  // сделать КВАДРАТ или ТРЕУГОЛЬНИК
+  // Как их делать было описано выше
+  // Ниже представлены варианты защиты
+
+
+  {Рисуем точки пересечения Графика с ВЕРТЕКАЛЬНЫМИ линиями сетки}
+  {
+  Image1.Canvas.Pen.Color:= clRed;
+  Image1.Canvas.Pen.Width:=1;
+  for i:= 0 to Ndx do
+  begin
+    // Получаем положение i-ой линии только в ГРАФИЧЕСКИХ координатах
+    Xg := Xn + i * DXg;
+    // Находим точки пересечения с ВЕРТИКАЛЬНОЙ прямой Xg
+    CrossingsX(GraficPoints, CrossPoints, Xg);
+    // Перебираем их в циклке
+    for j:= 0 to high(CrossPoints) do
+    begin
+      p:= CrossPoints[j];
+      // Ставим эту самую точку
+      Image1.Canvas.Ellipse(p.x-3, p.y-3, p.x+3, p.y+3);
+    end;
+  end;
+  }
+
+  {Рисуем точки пересечения графика с ГОРИЗОНТАЛЬНЫМИ линиями сетки}
+  {
+  Image1.Canvas.Pen.Color:= clRed;
+  Image1.Canvas.Pen.Width:=1;
+  for i:= 0 to Ndy do
+  begin
+    // Получаем положение i-ой линии только в ГРАФИЧЕСКИХ координатах
+    Yg := Yk - i * DYg;
+
+    // Находим точки пересечения с ГОРИЗОНТАЛЬНОЙ прямой Yg
+    CrossingsY(GraficPoints, CrossPoints, Yg);
+
+    // Перебираем их в циклке
+    for j:= 0 to high(CrossPoints) do
+    begin
+      p:= CrossPoints[j];
+      // Ставим эту самую точку
+      Image1.Canvas.Ellipse(p.x-3, p.y-3, p.x+3, p.y+3);
+    end;
+  end;
+  }
 
 end;
 
