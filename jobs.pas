@@ -144,7 +144,7 @@ begin
 end;
 
 
-// Экстремумы функции
+{Экстремумы функции}
 procedure Extrems(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx; var k:integer);
 var x, before, after, dx: real;
     i: integer;
