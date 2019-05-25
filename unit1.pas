@@ -309,7 +309,7 @@ begin
     2: begin
 
          // Находим екстремумы
-         Extrem(Func, a,b, n, Arfx, k);
+         Extrems(Func, a,b, n, Arfx, k);
          // Задаём размер вспомогательного массива
          setlength(tempMas, k);
 
