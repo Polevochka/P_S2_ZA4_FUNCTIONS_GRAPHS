@@ -25,10 +25,12 @@ type
     Label2: TLabel;
     Label3: TLabel;
     RadioGroup1: TRadioGroup;
+    RadioGroup2: TRadioGroup;
     StringGrid1: TStringGrid;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure CheckGroup1ItemClick(Sender: TObject; Index: integer);
     procedure ComboBox1Select(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure RadioGroup1Click(Sender: TObject);
@@ -45,6 +47,9 @@ var
   n: integer;
   Func: TFunc;
   Arfx: TArfx;
+
+  // Процедура вычисления интеграла
+  Integ: TInteg;
 
 implementation
 
@@ -99,6 +104,22 @@ begin
 
   // Режим Работы по умолчанию выбираем первый(нулевой) - Функции
   RadioGroup1.ItemIndex := 0;
+
+  // Записываем ИМЕНА МЕТОДОВ взятия интеграла в меню интеграла
+  // Число МЕТОДОВ зависит от размера массива
+  // Поэтому если убрать один из него элемент
+  // То надо и поменять определение и Массива САМИХ ПРОЦЕДУР интегрирования и Массива ИМЁН ПРОЦЕДУР методов интегрирования
+  // А именно уменьшить верхний предел в модуле Jobs.pas
+  // Иначе эта строчка вызовет ошибку, тк обращается к элементу которого нет
+  for i:=0 to high(ArNameInteg) do
+    RadioGroup2.Items.Add(ArNameInteg[i]);
+
+  // Выбирам метод интегрирования по умолчанию 3 - метод ТРАПЕЦИЙ
+  RadioGroup2.ItemIndex := 3;
+
+  // Изначально у нас не выбран пункт интеграл
+  // следовательно и меню интеграла не нужно показывать
+  RadioGroup2.Visible:= False;
 
   // Записываем в комбобокс названия функция из модуля Functions
   for i:= 0 to high(ArNamef) do
@@ -227,8 +248,10 @@ begin
          // Выбрано Интеграл
          if CheckGroup1.Checked[3] then
          begin
-           SetLength(Arfx, n+1);
-           Integ(Func, a, b, n, Arfx);
+           // Получаем МЕТОД ВЗЯТИЯ интеграла из меню
+           Integ:= ArInteg[RadioGroup2.ItemIndex];
+           SetLength(Arfx, n+1); // Задаём размер получаемого массива
+           Integ(Func, a, b, n, Arfx); // Вычисляем интеграл
            // Крч 'интеграл' тупо не влезало, поэтому 'Integ' азазаз
            AddCol('Integ',Arfx);
            SetLength(Arfx, 0);
@@ -397,5 +420,21 @@ begin
   Form2.show;
 end;
 
-end.
+{Вызиывается если нажали на Checkgroup1}
+//там где F(x), F'(x), F''(x), Интеграл
+procedure TForm1.CheckGroup1ItemClick(Sender: TObject; Index: integer);
+begin
+  // Если выбран интеграл
+  if Index = 3 then
+    // Проверяем нам надо показать методы интегрирования или убрать их
+    // Если окно интегралов невидимое, то его надо ВКЛЮЧИТЬ
+    if RadioGroup2.Visible = False then
+      // Делаем выдимым окно метода интеграла
+      RadioGroup2.Visible:= True
+    else
+      // иначе ВЫКЛЮЧАЕМ
+      RadioGroup2.Visible:= False;
+end;
 
+
+end.

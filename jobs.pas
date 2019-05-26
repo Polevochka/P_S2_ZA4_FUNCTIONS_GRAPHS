@@ -10,15 +10,20 @@ uses
 
 Type
   TArfx = array of real;
+  TInteg = procedure(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
 
 // Заголовки функций, которые будут использоваться в других модулях
 procedure Fotx(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
 procedure Df_dx(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
 procedure D2f_dx(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
-procedure Integ(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
 
 procedure Roots(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx; var k:integer);
 procedure Extrems(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx; var k:integer);
+
+// Массив ИМЁН ПРОЦЕДУР методов интегрирования
+var ArNameInteg: array[0..4] of string;
+    // Массив САМИХ ПРОЦЕДУР интегрирования
+    ArInteg: array [0..4] of TInteg;
 
 implementation
 
@@ -72,26 +77,6 @@ begin
   // очищаем память, т.к. rfx больше не нужен,
   // а хранить его значения очень затратно по ресурсам
   SetLength(rfx, 0);
-end;
-
-{Интеграл от функции}
-// Метод трапеций
-// Здесь интересный факт, интеграл может уходит в ноль и быть отрицательный,
-// Т.к. мы здесь ищем не площадь а просто высчитываем определённый интеграл
-procedure Integ(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
-var x, dx, s: real; // s- это площадь маленкой трапеции с высотой dx
-    i: integer;
-begin
-  dx := (b-a)/n; // вычисляем шаг
-  Arfx[0]:= 0;   // Интеграл от а до а = 0
-  for i:= 1 to n do // Последовательно перебираем x
-  begin
-    x:= a + i*dx; // Вычисляем текущее положение с нашим сдвигом dx
-    s:= (f(x-dx) + f(x))*dx/2; // Вычисляем площадь трапеции с высотой dx
-    // И текущее значение интеграла это
-    // сумма этой трапеции с площадью s c предыдущим значением интеграла
-    arfx[i]:= arfx[i-1] + s;
-  end;
 end;
 
 
@@ -167,6 +152,119 @@ begin
 
   end;
 end;
+
+
+{Интеграл от функции}
+// Здесь интересный факт, интеграл может уходит в ноль и быть отрицательный,
+// Т.к. мы здесь ищем не площадь а просто высчитываем определённый интеграл
+// Хороший сайт http://www.cleverstudents.ru/integral/method_of_rectangles.html
+
+// Важно помнить
+// n - число прямугольников, на которые мы разбиваем площадь под графиком функции
+// n+1 - Число точек, которые образуют основания прямоугольников
+// Но мы должны записать значение интеграла в каждую точку из данного отрезка [a,b]
+// Спасает точка 'а'
+// ВСЕГДА интеграл от 'а' до 'а' (integ(f, a, a)) равен 0
+// Поэтому всегда в точке 'a' интеграл пусть будет равн нулю
+
+// Метод ЛЕВЫХ ПРЯМОУГОЛЬНИКОВ
+procedure IntegLeftRect(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
+var x, dx, s: real; // s- это площадь маленкой трапеции с высотой dx
+    i: integer;
+begin
+  Arfx[0]:= 0;   // Интеграл от а до а = 0
+  dx := (b-a)/n; // вычисляем шаг
+  s:= 0;
+  for i:=0 to n-1 do
+  begin
+    x:= a + i*dx;
+    s:= s + f(x)*dx;
+    Arfx[i+1]:= s;
+  end;
+end;
+
+// Метод ПРАВЫХ ПРЯМОУГОЛЬНИКОВ
+procedure IntegRightRect(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
+var x, dx, s: real; // s- это площадь маленкой трапеции с высотой dx
+    i: integer;
+begin
+  Arfx[0]:= 0;   // Интеграл от а до а = 0
+  dx := (b-a)/n; // вычисляем шаг
+  s:= 0;
+  for i:=1 to n do
+  begin
+    x:= a + i*dx;
+    s:= s + f(x)*dx;
+    Arfx[i]:= s;
+  end;
+
+end;
+
+// Метод СРЕДНИХ ПРЯМОУГОЛЬНИКОВ
+procedure IntegAverageRect(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
+var x, dx, s: real; // s- это площадь маленкой трапеции с высотой dx
+    i: integer;
+begin
+  Arfx[0]:= 0;   // Интеграл от а до а = 0
+  dx := (b-a)/n; // вычисляем шаг
+  s:= 0;
+  for i:=1 to n do
+  begin
+    x:= a + (i-1)*dx;
+    s:= s + f(x +dx/2)*dx;
+    Arfx[i]:= s;
+  end;
+
+end;
+
+// Метод ТРАПЕЦИИ
+procedure IntegTrapecia(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
+var x, dx, s: real; // s- это площадь маленкой трапеции с высотой dx
+    i: integer;
+begin
+  Arfx[0]:= 0;   // Интеграл от а до а = 0
+  dx := (b-a)/n; // вычисляем шаг
+  s:=0;
+  for i:= 1 to n do // Последовательно перебираем x
+  begin
+    x:= a + i*dx; // Вычисляем текущее положение с нашим сдвигом dx
+    s:= s + (f(x-dx) + f(x))*dx/2; // Вычисляем площадь трапеции с высотой dx
+    arfx[i]:= s;
+  end;
+end;
+
+// Метод СИМПСОНА
+procedure IntegSimpson(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
+var x, dx, s: real; // s- это площадь маленкой трапеции с высотой dx
+    i: integer;
+begin
+  Arfx[0]:= 0;   // Интеграл от а до а = 0
+  dx := (b-a)/n; // вычисляем шаг
+  s:=0;
+  for i:= 1 to n do
+  begin
+    x:= a + i*dx;
+    s:= s + (dx/6)*(f(x-dx) + 4*f(((x-dx)+x)/2) + f(x)); // Вычисляем площадь трапеции с высотой dx
+    arfx[i]:= s;
+  end;
+end;
+
+// то что будет выполняться при 'uses jobs' в модуле Unit1.pas
+begin
+  // Заполняем массив ИМЁН методов интегрирования
+  ArNameInteg[0]:= 'Левых Прямоугольников';
+  ArNameInteg[1]:= 'Правых Прямоугольников';
+  ArNameInteg[2]:= 'Средних Прямоугольников';
+  ArNameInteg[3]:= 'Трапеции';
+  ArNameInteg[4]:= 'Симпсона';
+
+  // Заполняем массив САМИХ МЕТОДОВ интегрирования
+  ArInteg[0]:= @IntegLeftRect;
+  ArInteg[1]:= @IntegRightRect;
+  ArInteg[2]:= @IntegAverageRect;
+  ArInteg[3]:= @IntegTrapecia;
+  ArInteg[4]:= @IntegSimpson;
+end.
 
 end.
 
