@@ -20,6 +20,7 @@ procedure D2f_dx(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx);
 procedure Roots(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx; var k:integer);
 procedure Extrems(f:Tfunc; a,b:real; n:integer; var Arfx:TArfx; var k:integer);
 
+
 // Массив ИМЁН ПРОЦЕДУР методов интегрирования
 var ArNameInteg: array[0..4] of string;
     // Массив САМИХ ПРОЦЕДУР интегрирования

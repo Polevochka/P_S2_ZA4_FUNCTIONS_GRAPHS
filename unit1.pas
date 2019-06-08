@@ -17,6 +17,7 @@ type
     Button2: TButton;
     Button3: TButton;
     CheckGroup1: TCheckGroup;
+    CheckGroup2: TCheckGroup;
     ComboBox1: TComboBox;
     Edit1: TEdit;
     Edit2: TEdit;
@@ -25,7 +26,6 @@ type
     Label2: TLabel;
     Label3: TLabel;
     RadioGroup1: TRadioGroup;
-    RadioGroup2: TRadioGroup;
     StringGrid1: TStringGrid;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -112,14 +112,14 @@ begin
   // А именно уменьшить верхний предел в модуле Jobs.pas
   // Иначе эта строчка вызовет ошибку, тк обращается к элементу которого нет
   for i:=0 to high(ArNameInteg) do
-    RadioGroup2.Items.Add(ArNameInteg[i]);
+    CheckGroup2.Items.Add(ArNameInteg[i]);
 
   // Выбирам метод интегрирования по умолчанию 3 - метод ТРАПЕЦИЙ
-  RadioGroup2.ItemIndex := 3;
+  CheckGroup2.Checked[3] := True;
 
   // Изначально у нас не выбран пункт интеграл
   // следовательно и меню интеграла не нужно показывать
-  RadioGroup2.Visible:= False;
+  CheckGroup2.Visible:= False;
 
   // Записываем в комбобокс названия функция из модуля Functions
   for i:= 0 to high(ArNamef) do
@@ -248,13 +248,23 @@ begin
          // Выбрано Интеграл
          if CheckGroup1.Checked[3] then
          begin
-           // Получаем МЕТОД ВЗЯТИЯ интеграла из меню
-           Integ:= ArInteg[RadioGroup2.ItemIndex];
-           SetLength(Arfx, n+1); // Задаём размер получаемого массива
-           Integ(Func, a, b, n, Arfx); // Вычисляем интеграл
-           // Крч 'интеграл' тупо не влезало, поэтому 'Integ' азазаз
-           AddCol('Integ',Arfx);
-           SetLength(Arfx, 0);
+           // обходим все возможные методы интегрирования
+           // массивы ArInteg и ArIntegName находятся в модуле Jobs
+           for i:=0 to high(ArInteg) do
+           begin
+             // если выбран i-ый метод интегрирования
+             if CheckGroup2.Checked[i] then
+             begin
+               // Получаем МЕТОД ВЗЯТИЯ интеграла из меню
+               Integ:= ArInteg[i];
+               SetLength(Arfx, n+1); // Задаём размер получаемого массива
+               Integ(Func, a, b, n, Arfx); // Вычисляем интеграл
+               // добавляем столбец с надписью интеграла  метода интегрирования
+               // имена методов интегрирования находятся в массиве ArNameInteg
+               AddCol(ArNameInteg[i], Arfx);
+               SetLength(Arfx, 0); // очищаем вспомогателььный массив
+             end;
+           end;
          end;
 
          // Добавляем пространства для полосы прокрутки
@@ -428,12 +438,12 @@ begin
   if Index = 3 then
     // Проверяем нам надо показать методы интегрирования или убрать их
     // Если окно интегралов невидимое, то его надо ВКЛЮЧИТЬ
-    if RadioGroup2.Visible = False then
+    if CheckGroup2.Visible = False then
       // Делаем выдимым окно метода интеграла
-      RadioGroup2.Visible:= True
+      CheckGroup2.Visible:= True
     else
       // иначе ВЫКЛЮЧАЕМ
-      RadioGroup2.Visible:= False;
+      CheckGroup2.Visible:= False;
 end;
 
 
