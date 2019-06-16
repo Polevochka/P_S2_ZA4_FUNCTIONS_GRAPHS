@@ -90,7 +90,7 @@ begin
 
   k:=0; // счётчик найденных точек пересечения
   // Обходим точки графика
-  for i:=0 to high(GraficPoints)-1 do
+  for i:=0 to high(GraficPoints) do
   begin
 
     // Так как для соединения точек графика мы используем
@@ -157,7 +157,7 @@ begin
   // Делаем все также как и с CrossingsY только для вертикальных линий
   k:=0;// счётчик найденных точек пересечения
   // Обходим точки графика
-  for i:=0 to high(GraficPoints)-1 do
+  for i:=0 to high(GraficPoints) do
   begin
     // Так как для соединения точек графика мы используем
     // Image1.Canvas.Polyline(GraficPoints);
