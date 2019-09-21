@@ -1,13 +1,13 @@
 object Form1: TForm1
-  Left = 48
+  Left = 672
   Height = 439
-  Top = 169
+  Top = 91
   Width = 685
   Caption = 'Form1'
   ClientHeight = 439
   ClientWidth = 685
   OnCreate = FormCreate
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '2.0.2.0'
   object Edit1: TEdit
     Left = 368
     Height = 29
