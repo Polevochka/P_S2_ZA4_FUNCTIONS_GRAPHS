@@ -16,7 +16,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <CursorPos X="31" Y="19"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="22" Y="16"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -33,7 +34,6 @@
         <Filename Value="jobs.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Jobs"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <CursorPos X="48" Y="10"/>
         <UsageCount Value="20"/>
